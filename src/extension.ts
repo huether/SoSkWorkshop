@@ -1,26 +1,98 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "soskworkshop" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('soskworkshop.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from SoSkWorkshop!');
-	});
-
-	context.subscriptions.push(disposable);
+interface PomodoroSettings {
+    workDuration: number; // in minutes
+    breakDuration: number; // in minutes
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+enum TimerState {
+    Work,
+    Break,
+    Stopped
+}
+
+export function activate(context: vscode.ExtensionContext) {
+    let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    let timer: NodeJS.Timeout | null = null;
+    let remainingSeconds: number = 0;
+    let timerState: TimerState = TimerState.Stopped;
+    let settings: PomodoroSettings = {
+        workDuration: vscode.workspace.getConfiguration('pomodoro').get('workDuration') || 25,
+        breakDuration: vscode.workspace.getConfiguration('pomodoro').get('breakDuration') || 5
+    };
+
+    function updateStatusBar() {
+        if (timerState === TimerState.Stopped) {
+            statusBarItem.text = '🍅';
+            statusBarItem.tooltip = 'Click to start';
+        } else {
+            const minutes = Math.floor(remainingSeconds / 60);
+            const seconds = remainingSeconds % 60;
+            statusBarItem.text = `🍅 ${timerState}: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            statusBarItem.tooltip = `Click to ${timerState === TimerState.Work ? 'start break' : 'start work'}`;
+        }
+        statusBarItem.show();
+    }
+
+    function startTimer(duration: number, nextState: TimerState) {
+        remainingSeconds = duration * 60;
+        timerState = nextState;
+        updateStatusBar();
+
+        if (timer) {
+            clearInterval(timer);
+        }
+
+        timer = setInterval(() => {
+            remainingSeconds--;
+
+            if (remainingSeconds < 0) {
+                clearInterval(timer!);
+                timer = null;
+
+                vscode.window.showInformationMessage(`Pomodoro: ${timerState === TimerState.Work ? 'Work' : 'Break'} time is over!`);
+
+                if (timerState === TimerState.Work) {
+                    startTimer(settings.breakDuration, TimerState.Break);
+                } else {
+                    startTimer(settings.workDuration, TimerState.Work);
+                }
+                return;
+            }
+            updateStatusBar();
+        }, 1000);
+    }
+
+    statusBarItem.command = 'soskWorkshop.toggleTimer';
+
+    let toggleTimerCommand = vscode.commands.registerCommand('soskWorkshop.toggleTimer', () => {
+        if (timerState === TimerState.Stopped) {
+            startTimer(settings.workDuration, TimerState.Work);
+        } else {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            timerState = TimerState.Stopped;
+            updateStatusBar();
+        }
+    });
+
+
+    context.subscriptions.push(statusBarItem);
+    context.subscriptions.push(toggleTimerCommand);
+
+    //Configuration change handler
+    vscode.workspace.onDidChangeConfiguration(event => {
+        if (event.affectsConfiguration('pomodoro.workDuration')) {
+            settings.workDuration = vscode.workspace.getConfiguration('pomodoro').get('workDuration') || 25;
+        }
+        if (event.affectsConfiguration('pomodoro.breakDuration')) {
+            settings.breakDuration = vscode.workspace.getConfiguration('pomodoro').get('breakDuration') || 5;
+        }
+    });
+
+    updateStatusBar();
+}
+
+export function deactivate() { }
