@@ -12,7 +12,7 @@ enum TimerState {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
     let timer: NodeJS.Timeout | null = null;
     let remainingSeconds: number = 0;
     let timerState: TimerState = TimerState.Stopped;
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
             const minutes = Math.floor(remainingSeconds / 60);
             const seconds = remainingSeconds % 60;
-            statusBarItem.text = `🍅 ${timerState}: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            statusBarItem.text = `🍅 ${TimerState[timerState]}: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             statusBarItem.tooltip = `Click to ${timerState === TimerState.Work ? 'start break' : 'start work'}`;
         }
         statusBarItem.show();
