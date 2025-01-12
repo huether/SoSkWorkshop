@@ -55,15 +55,13 @@ export class PomodoroTimer {
 
   public updateStatusBar(): void {
       if (this._timerState === TimerState.Stopped) {
-          this._statusBarItem.text = '🍅'; // Added the tomato back here
-          this._statusBarItem.tooltip = 'Click to start';
+          // Add text and tool tip for stopped state
       } else {
           const minutes = Math.floor(this._remainingSeconds / 60);
           const seconds = this._remainingSeconds % 60;
-          this._statusBarItem.text = `🍅 ${TimerState[this._timerState]}: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`; // Added the tomato back here
-          this._statusBarItem.tooltip = `Click to ${this._timerState === TimerState.Work ? 'start break' : 'start work'}`;
+          // Add current time and tool tip for running state
       }
-      this._statusBarItem.show();
+      // Show Status Bar Item
   }
 
   public toggleTimer(): void {
