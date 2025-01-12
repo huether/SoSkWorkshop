@@ -12,27 +12,7 @@
   "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
-     "commands": [
-            {
-                "command": "soskworkshop.toggleTimer",
-                "title": "Toggle Timer"
-            }
-     ],
-     "configuration": {
-            "title": "Pomodoro",
-            "properties": {
-                "pomodoro.workDuration": {
-                    "type": "number",
-                    "default": 25,
-                    "description": "Work duration in minutes"
-                },
-                "pomodoro.breakDuration": {
-                    "type": "number",
-                    "default": 5,
-                    "description": "Break duration in minutes"
-                }
-            }
-        }
+    
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
