@@ -12,7 +12,10 @@
   "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
-    
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huether/SoSkWorkshop"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
