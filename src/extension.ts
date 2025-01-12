@@ -20,7 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(statusBarItem);
     context.subscriptions.push(toggleTimerCommand);
 
-    // Configuration change handler
     vscode.workspace.onDidChangeConfiguration(event => {
         if (event.affectsConfiguration('pomodoro.workDuration')) {
             settings.workDuration = vscode.workspace.getConfiguration('pomodoro').get('workDuration') || 25;

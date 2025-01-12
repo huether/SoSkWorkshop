@@ -3,7 +3,7 @@
   "displayName": "SoSkWorkshop",
   "description": "",
   "version": "0.0.1",
-  "icon": "./img/test.png",
+  "icon": "./img/pomodoro.png",
   "engines": {
     "vscode": "^1.96.0"
   },
