@@ -3,6 +3,7 @@
   "displayName": "SoSkWorkshop",
   "description": "",
   "version": "0.0.1",
+  "icon": "./img/test.png",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -33,6 +34,10 @@
                 }
             }
         }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huether/SoSkWorkshop"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
